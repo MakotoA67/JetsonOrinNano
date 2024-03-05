@@ -1,0 +1,51 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Jetson Device-tree overlay for TC358743 CAM1 port
+ *
+ * Copyright (c) 2021-2023 NVIDIA CORPORATION. All rights reserved.
+ *
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-common/jetson/tegra234-p3767-0000-common.h>
+
+/ {
+	overlay-name = "Camera TC358743-C";
+	jetson-header-name = "Jetson 24pin CSI Connector";
+        compatible = JETSON_COMPATIBLE_P3768;
+
+	/* Disable IMX219-C */
+	fragment@0 {
+		target = <&imx219_cam1>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+    /* Enable TC358743-C */
+	fragment@1 {
+		target = <&tc358743_cam1>;
+		__overlay__ {
+			status = "okay";
+		};
+	};
+    /* route Sensor to NVCSI */
+	fragment@2 {
+		target = <&toshiba_tc358743_csi_in1>;
+		__overlay__ {
+			status = "okay";
+			port-index = <2>;
+			bus-width = <2>;
+			remote-endpoint = <&toshiba_tc358743_out1>;
+		};
+	};
+    /* route NVCSI TO VI */
+	fragment@3 {
+		target = <&toshiba_tc358743_csi_out1>;
+		__overlay__ {
+			status = "okay";
+			remote-endpoint = <&toshiba_tc358743_vi_in1>;
+		};
+	};
+};
